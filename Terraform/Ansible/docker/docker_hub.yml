@@ -142,6 +142,21 @@
     - name: Set local docker environment for minikube
       shell: |
         eval $(minikube docker-env)
+    
+    - name: Ensure helm directory exists
+      file:
+        path: /home/{{ ansible_user }}/helm_charts/
+        state: directory
+        mode: '0755'
+    
+    - name: Clear chart directory contents
+      command: rm -rf /home/{{ ansible_user }}/helm_charts/*
 
+    - name: Copy Helm charts
+      copy:
+        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/helm_charts/
+        dest: /home/{{ ansible_user }}/helm_charts/
+        mode: '0755'
+    
     - name: Deploy with Helm
-      command: chdir=/home/ubuntu/LaptopMetricsApp/helm_charts minikube install laptopmonitoring .
+      command: chdir=/home/ubuntu/helm_charts minikube install laptopmonitoring .
