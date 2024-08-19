@@ -26,13 +26,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       
-      - name: Build an push Backend
+      - name: Build an push
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./LaptopMetricsApp/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/systemmonitoring:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/systemmonitoring:latest
 
       - name: Log out from Docker Hub
         run: docker logout
