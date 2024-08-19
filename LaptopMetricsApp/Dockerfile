@@ -9,7 +9,7 @@ WORKDIR /src
 
 # Copy the project file and restore dependencies
 COPY ["*.csproj", "./"]
-RUN dotnet restore "C#_Project.csproj"
+RUN dotnet restore "*.csproj"
 
 # Copy the entire source code into the container
 COPY . .
