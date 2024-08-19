@@ -16,11 +16,11 @@ COPY . .
 
 # Build the application
 WORKDIR "/src"
-RUN dotnet build "C#_Project.csproj" -c Release -o /app/build
+RUN dotnet build -c Release -o /app/build
 
 # Publish the application
 FROM build AS publish
-RUN dotnet publish "C#_Project.csproj" -c Release -o /app/publish
+RUN dotnet publish -c Release -o /app/publish
 
 # Use the base image for the final stage
 FROM base AS final
