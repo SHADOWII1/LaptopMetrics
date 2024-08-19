@@ -33,3 +33,6 @@ jobs:
           file: ./LaptopMetricsApp/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/systemmonitoring:latest
+
+      - name: Log out from Docker Hub
+        run: docker logout
