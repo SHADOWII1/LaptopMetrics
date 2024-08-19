@@ -121,17 +121,24 @@
       args:
         chdir: /opt/docker
 
-    #- name: Start Minikube
-     # command: minikube start --driver=docker --force
-      #ignore_errors: yes # Ignoring errors in case Minikube is already running
+    - name: Set MINIKUBE_IP variable
+      set_fact:
+        MINIKUBE_IP: 192.168.49.2
+
+      # Add entries to hosts file
+    - name: Add entry to /etc/hosts if not present
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ MINIKUBE_IP }} taskapp.acme.com"
+        state: present
+
+    - name: Start Minikube
+      command: minikube start --driver=docker --static-ip={{ MINIKUBE_IP }} --force
+      ignore_errors: yes # Ignoring errors in case Minikube is already running
     
-    #- name: Enable Ingress addon
-     # command: minikube addons enable ingress
-    
-    #- name: Enable Dashboard addon
-     # command: minikube addons enable dashboard
-    
-    
-    #- name: Set local docker environment for minikube
-     # shell: |
-      #  eval $(minikube docker-env)
+    - name: Enable Ingress addon
+      command: minikube addons enable ingress
+        
+    - name: Set local docker environment for minikube
+      shell: |
+        eval $(minikube docker-env)
