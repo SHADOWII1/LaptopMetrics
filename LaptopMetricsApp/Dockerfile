@@ -8,19 +8,19 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy the project file and restore dependencies
-COPY ["*.csproj", "./"]
-RUN dotnet restore "*.csproj"
+COPY ["C#_Project.csproj", "./"]
+RUN dotnet restore "C#_Project.csproj"
 
 # Copy the entire source code into the container
 COPY . .
 
 # Build the application
 WORKDIR "/src"
-RUN dotnet build -c Release -o /app/build
+RUN dotnet build "C#_Project.csproj" -c Release -o /app/build
 
 # Publish the application
 FROM build AS publish
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish "C#_Project.csproj" -c Release -o /app/publish
 
 # Use the base image for the final stage
 FROM base AS final
