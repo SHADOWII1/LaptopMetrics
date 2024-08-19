@@ -8,7 +8,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Copy the project file and restore dependencies
-COPY ["C#_Project.csproj", "./"]
+COPY ["*.csproj", "./"]
 RUN dotnet restore "C#_Project.csproj"
 
 # Copy the entire source code into the container
