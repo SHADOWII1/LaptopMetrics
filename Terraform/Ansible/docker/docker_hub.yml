@@ -142,3 +142,6 @@
     - name: Set local docker environment for minikube
       shell: |
         eval $(minikube docker-env)
+
+    - name: Deploy with Helm
+      command: chdir=/home/ubuntu/LaptopMetricsApp/helm_charts minikube install laptopmonitoring .
