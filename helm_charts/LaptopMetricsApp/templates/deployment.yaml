@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }} 
+  labels:
+    app: {{ .Release.Name }}
+    release: {{ .Values.laptopmonitoring.release }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+      release: {{ .Values.laptopmonitoring.release }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        release: {{ .Values.laptopmonitoring.release }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: /metrics
+        prometheus.io/port: "{{ .Values.laptopmonitoring.service.targetPort }}"
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.laptopmonitoring.image.repository }}"
+          ports:
+            - containerPort: {{ .Values.laptopmonitoring.service.targetPort }}
+          imagePullPolicy: {{ .Values.laptopmonitoring.image.pullPolicy }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.laptopmonitoring.image.healthEndpoint }}
+              port: {{ .Values.laptopmonitoring.service.targetPort }}
+            initialDelaySeconds: {{ .Values.laptopmonitoring.image.initialDelaySeconds }}
+            timeoutSeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.laptopmonitoring.image.healthEndpoint }}
+              port: {{ .Values.laptopmonitoring.service.targetPort }}
+            initialDelaySeconds: {{ .Values.laptopmonitoring.image.initialDelaySeconds }}
+            timeoutSeconds: 10
+            periodSeconds: 10
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "1"
+            requests:
+              memory: "512Mi"
+              cpu: "1"
+      #imagePullSecrets:  
+      #        - name: ghcr
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ .Release.Name }} 
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Release.Name }} 
+  minReplicas: {{ .Values.laptopmonitoring.hpa.minReplicas }}
+  maxReplicas: {{ .Values.laptopmonitoring.hpa.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Resource
+    resource:
+      name: ram
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-service
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  type: ClusterIP
+  selector:
+    app: {{ .Release.Name }}
+    release: {{ .Values.laptopmonitoring.release }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.laptopmonitoring.service.targetPort }}
+      targetPort: {{ .Values.laptopmonitoring.service.targetPort }}

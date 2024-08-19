@@ -1,0 +1,35 @@
+services:
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+     - '3000:3000'
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    ports:
+      - 9090:9090
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prom_data:/prometheus
+
+  systemmonitoring:
+    image: shadowii/systemmonitoring:latest
+    container_name: systemmonitoring
+    ports:
+      - 9100:9100
+    restart: unless-stopped
+    volumes:
+      - systemmonitoring-storage:/var/lib/systemmonitoring
+
+volumes:
+  grafana-storage: {}
+  prom_data: {}
+  systemmonitoring-storage: {}

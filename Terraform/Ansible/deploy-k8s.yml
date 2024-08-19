@@ -1,0 +1,89 @@
+# Playbook to configure Kubernetes nodes
+- hosts: all
+  name: Configure Virtual Machine
+  gather_facts: yes
+  become: yes  # Run tasks with sudo
+  become_user: root
+
+  tasks:
+    # Wait to establish Connection
+    - name: Awaiting SSH
+      wait_for_connection:
+
+    - name: Wait for cloud-init to finish
+      raw: while [ ! -f /var/lib/cloud/instance/boot-finished ]; do sleep 10s; done
+      retries: 10
+      delay: 1
+
+    # Install required packages
+    - name: Installing required system packages
+      apt:
+        name:
+          - git
+          - apt-transport-https
+          - curl
+          - ca-certificates
+          - software-properties-common
+          - python3
+          - python3-pip
+          - virtualenv
+        state: latest
+        update_cache: yes
+
+    # Install Docker
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+    - name: Update apt and install docker-ce
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Add current user to the docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Ensure user has access to Docker socket
+      file:
+        path: /var/run/docker.sock
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+
+    # Install Kubernetes
+    - name: Install Kubernetes 1/2 [GPG Key]
+      shell: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+
+    # Add Kubernetes repository
+    - name: Install Kubernetes 2/2 [Kubernetes Repository]
+      shell: echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.30/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+    
+    # Update apt cache after adding Kubernetes repo
+    - name: Update apt cache after adding Kubernetes repo
+      apt:
+        update_cache: yes
+
+    # Install Kubernetes components
+    - name: Install kubectl
+      ansible.builtin.apt:
+        name: kubectl
+        state: latest
+        update_cache: true
+
+    - name: Download Minikube binary
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: '0755'
+    
+    # Disable swap (required for Kubernetes)
+    - name: Disable swap
+      command: swapoff -a
+

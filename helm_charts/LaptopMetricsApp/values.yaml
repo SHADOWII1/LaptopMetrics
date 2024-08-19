@@ -1,0 +1,39 @@
+laptopmonitoring:
+  release: primary
+  image:
+    repository: shadowii/systemmonitoring:latest
+    version: ""
+    tag: latest # use appVersion from Chart spec
+    pullPolicy: IfNotPresent
+    healthEndpoint: /
+    initialDelaySeconds: 90
+  hpa:
+    minReplicas: 1
+    maxReplicas: 1
+  service:
+    port: 9100
+    targetPort: 9100
+  ingress:
+    host: "app.systemmonitoring.com"
+
+prometheus:
+  name: prometheus
+  image:
+    repository: prom/prometheus
+    tag: latest 
+    pullPolicy: IfNotPresent
+  replicas: 1
+  service:
+    port: 9090
+    targetPort: 9090
+
+grafana:
+  name: grafana
+  image:
+    repository: grafana/grafana
+    tag: latest 
+    pullPolicy: IfNotPresent
+  replicas: 1
+  service:
+    port: 3000
+    targetPort: 3000

@@ -1,0 +1,137 @@
+# Playbook to configure Kubernetes nodes
+- hosts: all
+  name: Set Up Docker Images
+  gather_facts: yes
+  become: yes  # Run tasks with sudo
+  become_user: root
+
+  vars_files:
+    - docker_hub_credentials.yml
+
+  tasks:
+    
+    - name: Copy hosts config file to remote machine
+      copy:
+        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/hosts.cfg
+        dest: /tmp/hosts.cfg
+
+    - name: Load VM IPs from config file
+      command: cat /tmp/hosts.cfg
+      register: vm_ips_cfg
+
+    - name: Parse VM IPs
+      set_fact:
+        vm_ips: "{{ vm_ips_cfg.stdout_lines[1] }}"
+
+    - name: Install Docker SDK for Python
+      pip:
+        name: docker
+        state: present
+
+    - name: Ensure Docker is started and enabled
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+    
+    - name: Create Docker CLI plugins directory
+      file:
+        path: /usr/local/lib/docker/cli-plugins
+        state: directory
+        mode: '0755'
+
+    - name: Download Buildx binary
+      get_url:
+        url: https://github.com/docker/buildx/releases/download/v0.10.4/buildx-v0.10.4.linux-amd64
+        dest: /usr/local/lib/docker/cli-plugins/docker-buildx
+        mode: '0755'
+
+    - name: Ensure Buildx binary has correct permissions
+      file:
+        path: /usr/local/lib/docker/cli-plugins/docker-buildx
+        mode: '0755'
+        state: file
+
+    - name: Remove old docker-compose
+      apt:
+        name: docker-compose
+        state: absent
+
+    - name: Download docker-compose
+      shell: curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+
+    - name: Make docker-compose executable
+      file:
+        path: /usr/bin/docker-compose
+        mode: '0755'
+        state: file
+
+    - name: Log in to Docker Hub
+      docker_login:
+        username: "{{ docker_hub_username }}"
+        password: "{{ docker_hub_password }}"
+    
+    - name: Ensure application directory exists
+      file:
+        path: /home/{{ ansible_user }}/LaptopMetricsApp
+        state: directory
+        mode: '0755'
+    
+    - name: Clear application directory contents
+      command: rm -rf /home/{{ ansible_user }}/LaptopMetricsApp/*
+
+    - name: Copy application code to Target
+      copy:
+        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/LaptopMetricsApp/
+        dest: /home/{{ ansible_user }}/LaptopMetricsApp/
+        mode: '0755'
+    
+    - name: Build Docker image
+      command: docker build -t shadowii/systemmonitoring:latest /home/{{ ansible_user }}/LaptopMetricsApp
+
+    - name: Push Docker image to Docker Hub
+      command: docker push shadowii/systemmonitoring:latest
+
+    - name: Create directory for Docker Compose files
+      file:
+        path: /opt/docker
+        state: directory
+        mode: '0755'
+
+    - name: Create directory for Prometheus Config file
+      file:
+        path: /opt/docker/prometheus
+        state: directory
+        mode: '0755'
+
+    - name: Copy Docker Compose file for Grafana and Prometheus
+      copy:
+        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/DockerCompose/docker-compose.yml
+        dest: /opt/docker/docker-compose.yml
+
+    - name: Copy Prometheus configuration file
+      template:
+        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/DockerCompose/ConfigFile_prometheus/prometheus.yml.j2
+        dest: /opt/docker/prometheus/prometheus.yml
+      vars:
+        vm_ips: "{{ vm_ips }}"
+
+    - name: Start Docker Compose
+      command: docker-compose up -d
+      args:
+        chdir: /opt/docker
+
+    #- name: Start Minikube
+     # command: minikube start --driver=docker --force
+      #ignore_errors: yes # Ignoring errors in case Minikube is already running
+    
+    #- name: Enable Ingress addon
+     # command: minikube addons enable ingress
+    
+    #- name: Enable Dashboard addon
+     # command: minikube addons enable dashboard
+    
+    
+    #- name: Set local docker environment for minikube
+     # shell: |
+      #  eval $(minikube docker-env)
