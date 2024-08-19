@@ -1,0 +1,65 @@
+# Playbook to configure Kubernetes nodes
+- hosts: all
+  name: Set Up Helm charts
+  gather_facts: no
+  become: yes  # Run tasks with sudo
+  become_user: root
+
+  
+
+  tasks:
+    - name: Set MINIKUBE_IP variable
+      set_fact:
+        MINIKUBE_IP: 192.168.49.2
+
+      # Add entries to hosts file
+    - name: Add entry to /etc/hosts if not present
+      lineinfile:
+        path: /etc/hosts
+        line: "{{ MINIKUBE_IP }} app.laptopmonitoring.com"
+        state: present
+
+    - name: Start Minikube
+      become_user: ubuntu
+      command: minikube start --driver=docker --static-ip={{ MINIKUBE_IP }} --force
+      ignore_errors: yes
+    
+    - name: Enable Ingress addon
+      become_user: ubuntu
+      command: minikube addons enable ingress
+
+    - name: Set local docker environment for minikube
+      shell: eval $(minikube docker-env) 
+
+    - name: Ensure helm directory exists
+      file:
+        path: /home/ubuntu/helm_charts/
+        state: directory
+        mode: '0755'
+    
+    - name: Clear chart directory contents
+      command: rm -rf /home/ubuntu/helm_charts/*
+
+    - name: Copy Helm charts
+      copy:
+        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/helm_charts/
+        dest: /home/ubuntu/helm_charts/
+        mode: '0755'
+    
+    - name: Install helm if not exists
+      unarchive:
+        src: https://get.helm.sh/helm-v3.11.0-linux-amd64.tar.gz
+        dest: /usr/local/bin
+        extra_opts: "--strip-components=1"
+        owner: root
+        group: root
+        mode: 0755
+        remote_src: true
+      args:
+        creates: /usr/local/bin/helm
+
+    - name: Deploy with Helm
+      become_user: ubuntu
+      command: helm install laptopmonitoring .
+      args:
+        chdir: /home/ubuntu/helm_charts/LaptopMetricsApp 

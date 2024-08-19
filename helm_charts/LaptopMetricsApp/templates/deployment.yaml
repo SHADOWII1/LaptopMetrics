@@ -31,20 +31,6 @@ spec:
           ports:
             - containerPort: {{ .Values.laptopmonitoring.service.targetPort }}
           imagePullPolicy: {{ .Values.laptopmonitoring.image.pullPolicy }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.laptopmonitoring.image.healthEndpoint }}
-              port: {{ .Values.laptopmonitoring.service.targetPort }}
-            initialDelaySeconds: {{ .Values.laptopmonitoring.image.initialDelaySeconds }}
-            timeoutSeconds: 10
-            periodSeconds: 10
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.laptopmonitoring.image.healthEndpoint }}
-              port: {{ .Values.laptopmonitoring.service.targetPort }}
-            initialDelaySeconds: {{ .Values.laptopmonitoring.image.initialDelaySeconds }}
-            timeoutSeconds: 10
-            periodSeconds: 10
           resources:
             limits:
               memory: "512Mi"
