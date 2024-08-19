@@ -129,7 +129,7 @@
     - name: Add entry to /etc/hosts if not present
       lineinfile:
         path: /etc/hosts
-        line: "{{ MINIKUBE_IP }} taskapp.acme.com"
+        line: "{{ MINIKUBE_IP }} laptopmonitoring.com"
         state: present
 
     - name: Start Minikube
@@ -138,7 +138,7 @@
     
     - name: Enable Ingress addon
       command: minikube addons enable ingress
-        
+
     - name: Set local docker environment for minikube
       shell: |
         eval $(minikube docker-env)
