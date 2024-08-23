@@ -14,7 +14,7 @@ laptopmonitoring:
     port: 9100
     targetPort: 9100
   ingress:
-    host: "app.systemmonitoring.com"
+    host: "app.laptopmonitoring.com"
 
 prometheus:
   name: prometheus

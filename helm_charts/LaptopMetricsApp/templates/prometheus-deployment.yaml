@@ -55,3 +55,19 @@ spec:
   ports:
     - port: {{ .Values.prometheus.service.port }}
       targetPort: {{ .Values.prometheus.service.targetPort }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.prometheus.name }}-nodeport
+spec:
+  type: NodePort
+  selector:
+    app: {{ .Values.prometheus.name }}
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9090
+      nodePort: 30010

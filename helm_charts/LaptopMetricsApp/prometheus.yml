@@ -4,10 +4,12 @@ global:
   evaluation_interval: 15s
 alerting:
   alertmanagers:
+    - follow_redirects: true
+    - enable_http2: true
     - static_configs:
       - targets: []
       scheme: http
-      timeout: 1s
+      timeout: 10s
       api_version: v1
 scrape_configs:
   - job_name: WebApp
@@ -17,22 +19,24 @@ scrape_configs:
     metrics_path: /metrics/
     scheme: http
     static_configs:
-      - targets: ['141.72.189.191:9100']
+      - targets: ['laptopmonitoring-service:9100']
 
   - job_name: prometheus
     honor_timestamps: true
+    follow_redirects: true
     scrape_interval: 5s
     scrape_timeout: 1s
     metrics_path: /metrics/
     scheme: http
     static_configs:
-      - targets: ['141.72.189.191:9090']
+      - targets: ['localhost:9090']
 
   - job_name: grafana
+    follow_redirects: true
     honor_timestamps: true
     scrape_interval: 5s
     scrape_timeout: 1s
     metrics_path: /metrics
     scheme: http
     static_configs:
-      - targets: ['141.72.189.191:3000']
+      - targets: ['grafana:3000']

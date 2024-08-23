@@ -29,7 +29,7 @@
       command: minikube addons enable ingress
 
     - name: Set local docker environment for minikube
-      shell: eval $(minikube docker-env) 
+      shell: eval $(minikube docker-env)
 
     - name: Ensure helm directory exists
       file:
@@ -62,4 +62,4 @@
       become_user: ubuntu
       command: helm install laptopmonitoring .
       args:
-        chdir: /home/ubuntu/helm_charts/LaptopMetricsApp 
+        chdir: /home/ubuntu/helm_charts/LaptopMetricsApp
