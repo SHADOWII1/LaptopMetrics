@@ -3,144 +3,155 @@
   name: Set Up Docker
   gather_facts: yes
   become: yes  # Run tasks with sudo
-  become_user: root #run as root
+  become_user: root  # Run as root
 
-  #Credentials saved as secrets, to access Docker Hub
+  # Credentials saved as secrets, to access Docker Hub
   vars_files:
     - docker_hub_credentials.yml
 
   tasks:
     
-    #Copy the config file with the IP address of the virtual machine
-    - name: Copy hosts config file to remote machine
-      copy:
-        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/hosts.cfg
-        dest: /tmp/hosts.cfg
+    - name: Retrieve The IP Address of The Virtual Machine
+      block:
 
-    #Retrieve the IP of the virtual machine
-    - name: Load VM IPs from config file
-      command: cat /tmp/hosts.cfg
-      register: vm_ips_cfg
+        # Copy the config file with the IP address of the virtual machine
+        - name: Copy hosts config file to remote machine
+          copy:
+            src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/hosts.cfg
+            dest: /tmp/hosts.cfg
 
-    #Set the IP of the Virtual machine as a fact
-    - name: Parse VM IPs
-      set_fact:
-        vm_ips: "{{ vm_ips_cfg.stdout_lines[1] }}"
+        # Retrieve the IP of the virtual machine
+        - name: Load VM IPs from config file
+          command: cat /tmp/hosts.cfg
+          register: vm_ips_cfg
 
-    #Install Docker Libraries for Python
-    - name: Install Docker SDK for Python
-      pip:
-        name: docker
-        state: present
+        # Set the IP of the Virtual machine as a fact
+        - name: Parse VM IPs
+          set_fact:
+            vm_ips: "{{ vm_ips_cfg.stdout_lines[1] }}"
 
-    #Enable Docker
-    - name: Ensure Docker is started and enabled
-      systemd:
-        name: docker
-        state: started
-        enabled: yes
-    
-    #Create Docker CLI Directory
-    - name: Create Docker CLI plugins directory
-      file:
-        path: /usr/local/lib/docker/cli-plugins
-        state: directory
-        mode: '0755'
+    - name: Prepare Docker Tools and Environment
+      block:
 
-    #Download Buildx Binary
-    - name: Download Buildx binary
-      get_url:
-        url: https://github.com/docker/buildx/releases/download/v0.10.4/buildx-v0.10.4.linux-amd64
-        dest: /usr/local/lib/docker/cli-plugins/docker-buildx
-        mode: '0755'
+        # Install Docker Libraries for Python
+        - name: Install Docker SDK for Python
+          pip:
+            name: docker
+            state: present
 
-    #Give Buildx Binary the right permissions
-    - name: Ensure Buildx Binary has The Correct Permissions
-      file:
-        path: /usr/local/lib/docker/cli-plugins/docker-buildx
-        mode: '0755'
-        state: file
+        # Enable Docker
+        - name: Ensure Docker is started and enabled
+          systemd:
+            name: docker
+            state: started
+            enabled: yes
 
-    #Unistall the Docker-Compose (returned Compatibility Errors)
-    - name: Remove uncompatible Docker-Compose
-      apt:
-        name: docker-compose
-        state: absent
+        # Create Docker CLI Directory
+        - name: Create Docker CLI plugins directory
+          file:
+            path: /usr/local/lib/docker/cli-plugins
+            state: directory
+            mode: '0755'
 
-    #Downlaod a suitable version of Docker Compose
-    - name: Download Docker-Compose
-      shell: curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+        # Download Buildx Binary
+        - name: Download Buildx binary
+          get_url:
+            url: https://github.com/docker/buildx/releases/download/v0.10.4/buildx-v0.10.4.linux-amd64
+            dest: /usr/local/lib/docker/cli-plugins/docker-buildx
+            mode: '0755'
 
-    #Give Docker Compose the right permissions
-    - name: Make Docker-Compose Executable
-      file:
-        path: /usr/bin/docker-compose
-        mode: '0755'
-        state: file
+        # Give Buildx Binary the right permissions
+        - name: Ensure Buildx Binary has The Correct Permissions
+          file:
+            path: /usr/local/lib/docker/cli-plugins/docker-buildx
+            mode: '0755'
+            state: file
 
-    #Log into Docker Hub with the secrets, available in docker_hub_credentials.yml
-    - name: Log in to Docker Hub
-      docker_login:
-        username: "{{ docker_hub_username }}"
-        password: "{{ docker_hub_password }}"
-    
+        # Uninstall the Docker-Compose (returned Compatibility Errors)
+        - name: Remove uncompatible Docker-Compose
+          apt:
+            name: docker-compose
+            state: absent
 
-    #Prepare a Directory for The application
-    - name: Ensure application directory exists
-      file:
-        path: /home/{{ ansible_user }}/LaptopMetricsApp
-        state: directory
-        mode: '0755'
-    
-    #Clear the Directory in case some Contents exists
-    - name: Clear application directory contents
-      command: rm -rf /home/{{ ansible_user }}/LaptopMetricsApp/*
+        # Download a suitable version of Docker Compose
+        - name: Download Docker-Compose
+          shell: curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 
-    #Copy the source code of the Application
-    - name: Copy application code to Target
-      copy:
-        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/LaptopMetricsApp/
-        dest: /home/{{ ansible_user }}/LaptopMetricsApp/
-        mode: '0755'
-    
-    #Build The Docker Image of the Application
-    - name: Build Docker image
-      command: docker build -t shadowii/systemmonitoring:latest /home/{{ ansible_user }}/LaptopMetricsApp
+        # Give Docker Compose the right permissions
+        - name: Make Docker-Compose Executable
+          file:
+            path: /usr/bin/docker-compose
+            mode: '0755'
+            state: file
 
-    #Upload the Docker Image to Docker Hub
-    - name: Push Docker image to Docker Hub
-      command: docker push shadowii/systemmonitoring:latest
+        # Log into Docker Hub with the secrets, available in docker_hub_credentials.yml
+        - name: Log in to Docker Hub
+          docker_login:
+            username: "{{ docker_hub_username }}"
+            password: "{{ docker_hub_password }}"
 
-    #Prepare a Directory for Docker Compose
-    - name: Create directory for Docker Compose files
-      file:
-        path: /opt/docker
-        state: directory
-        mode: '0755'
+    - name: Prepare the Application's Docker Image and Push it to Docker Hub
+      block:
 
-    #Prepare a Directory for The Prometheus Config File
-    - name: Create directory for Prometheus Config file
-      file:
-        path: /opt/docker/prometheus
-        state: directory
-        mode: '0755'
+        # Prepare a Directory for The application
+        - name: Ensure application directory exists
+          file:
+            path: /home/{{ ansible_user }}/LaptopMetricsApp
+            state: directory
+            mode: '0755'
 
-    #Retrieve the Docker Compose File for Grafana, Prometheus, and The Application
-    - name: Copy Docker Compose file for Grafana, Prometheus, and The Application 
-      copy:
-        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/DockerCompose/docker-compose.yml
-        dest: /opt/docker/docker-compose.yml
+        # Clear the Directory in case some Contents exists
+        - name: Clear application directory contents
+          command: rm -rf /home/{{ ansible_user }}/LaptopMetricsApp/*
 
-    #Retrieve The Prometheus Config File
-    - name: Copy Prometheus configuration file
-      template:
-        src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/DockerCompose/ConfigFile_prometheus/prometheus.yml.j2
-        dest: /opt/docker/prometheus/prometheus.yml
-      vars:
-        vm_ips: "{{ vm_ips }}"
+        # Copy the source code of the Application
+        - name: Copy application code to Target
+          copy:
+            src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/LaptopMetricsApp/
+            dest: /home/{{ ansible_user }}/LaptopMetricsApp/
+            mode: '0755'
 
-    #Start The Containers for Grafana, Prometheus, and The Application
-    - name: Start Docker Compose
-      command: docker-compose up -d
-      args:
-        chdir: /opt/docker
+        # Build The Docker Image of the Application
+        - name: Build Docker image
+          command: docker build -t shadowii/systemmonitoring:latest /home/{{ ansible_user }}/LaptopMetricsApp
+
+        # Upload the Docker Image to Docker Hub
+        - name: Push Docker image to Docker Hub
+          command: docker push shadowii/systemmonitoring:latest
+
+    - name: Prepare and Run The Docker Containers for Prometheus, Grafana, and The Application
+      block:
+
+        # Prepare a Directory for Docker Compose
+        - name: Create directory for Docker Compose files
+          file:
+            path: /opt/docker
+            state: directory
+            mode: '0755'
+
+        # Prepare a Directory for The Prometheus Config File
+        - name: Create directory for Prometheus Config file
+          file:
+            path: /opt/docker/prometheus
+            state: directory
+            mode: '0755'
+
+        # Retrieve the Docker Compose File for Grafana, Prometheus, and The Application
+        - name: Copy Docker Compose file for Grafana, Prometheus, and The Application 
+          copy:
+            src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/DockerCompose/docker-compose.yml
+            dest: /opt/docker/docker-compose.yml
+
+        # Retrieve The Prometheus Config File
+        - name: Copy Prometheus configuration file
+          template:
+            src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/DockerCompose/ConfigFile_prometheus/prometheus.yml.j2
+            dest: /opt/docker/prometheus/prometheus.yml
+          vars:
+            vm_ips: "{{ vm_ips }}"
+
+        # Start The Containers for Grafana, Prometheus, and The Application
+        - name: Start Docker Compose
+          command: docker-compose up -d
+          args:
+            chdir: /opt/docker
