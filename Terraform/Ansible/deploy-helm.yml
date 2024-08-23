@@ -3,50 +3,65 @@
   name: Set Up Helm charts
   gather_facts: no
   become: yes  # Run tasks with sudo
-  become_user: root
+  become_user: root # run as root
 
   
 
   tasks:
-    - name: Set MINIKUBE_IP variable
+    #Set Up the Fixed IP for the Minikube Instance
+    - name: Set Minikube Fixed IP Address Variable
       set_fact:
         MINIKUBE_IP: 192.168.49.2
-
-      # Add entries to hosts file
-    - name: Add entry to /etc/hosts if not present
+    
+    #Set Up the Domain Name with the Minikube IP 
+    - name: Add The Domain Name for the Application
       lineinfile:
         path: /etc/hosts
         line: "{{ MINIKUBE_IP }} app.laptopmonitoring.com"
         state: present
 
+    #Download Minikube Binary
+    - name: Download Minikube binary
+      get_url:
+        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        dest: /usr/local/bin/minikube
+        mode: '0755'
+
+    #Start Minikube Cluster as user Ubuntu (minikube can't start as root)
     - name: Start Minikube
       become_user: ubuntu
       command: minikube start --driver=docker --static-ip={{ MINIKUBE_IP }} --force
       ignore_errors: yes
     
+    #Enable Ingress as user Ubuntu
     - name: Enable Ingress addon
       become_user: ubuntu
       command: minikube addons enable ingress
 
-    - name: Set local docker environment for minikube
+    #Give Minikube access to Docker Local Environment
+    - name: Set local Docker Environment for minikube
       shell: eval $(minikube docker-env)
 
-    - name: Ensure helm directory exists
+    #Create Directory for Helm Charts
+    - name: Ensure Helm directory exists
       file:
         path: /home/ubuntu/helm_charts/
         state: directory
         mode: '0755'
     
+    #Remove existing Files, to avoid Duplicates
     - name: Clear chart directory contents
       command: rm -rf /home/ubuntu/helm_charts/*
 
+    #Copy Helm Charts to Server/Host
     - name: Copy Helm charts
       copy:
         src: /cygdrive/c/Users/hamza/OneDrive/Bureau/LaptopMetrics/helm_charts/
         dest: /home/ubuntu/helm_charts/
         mode: '0755'
     
-    - name: Install helm if not exists
+    #Install Helm
+    - name: Install Helm if not exists
       unarchive:
         src: https://get.helm.sh/helm-v3.11.0-linux-amd64.tar.gz
         dest: /usr/local/bin
@@ -58,6 +73,7 @@
       args:
         creates: /usr/local/bin/helm
 
+    #Deploy The App using Helm charts
     - name: Deploy with Helm
       become_user: ubuntu
       command: helm install laptopmonitoring .

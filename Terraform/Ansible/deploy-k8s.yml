@@ -30,8 +30,8 @@
         state: latest
         update_cache: yes
 
-    # Install Docker
-    - name: Add Docker GPG apt Key
+    # Install and Configure Docker
+    - name: Install Docker 1/4 [Add Docker GPG apt Key]
       apt_key:
         url: https://download.docker.com/linux/ubuntu/gpg
         state: present
@@ -39,25 +39,25 @@
       apt_repository:
         repo: deb https://download.docker.com/linux/ubuntu focal stable
         state: present
-    - name: Update apt and install docker-ce
+    - name: Install Docker 2/4 [Update apt and install docker-ce] 
       apt:
         name: docker-ce
         state: latest
         update_cache: true
 
-    - name: Add current user to the docker group
+    - name: Install Docker 3/4 [Add current user to the docker group]
       user:
         name: "{{ ansible_user }}"
         groups: docker
         append: yes
 
-    - name: Ensure user has access to Docker socket
+    - name: Install Docker 4/4 [Ensure user has access to Docker socket]
       file:
         path: /var/run/docker.sock
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
 
-    # Install Kubernetes
+    # Install and Configure Kubernetes
     - name: Install Kubernetes 1/2 [GPG Key]
       shell: curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.30/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
@@ -77,13 +77,7 @@
         state: latest
         update_cache: true
 
-    - name: Download Minikube binary
-      get_url:
-        url: https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        dest: /usr/local/bin/minikube
-        mode: '0755'
-    
     # Disable swap (required for Kubernetes)
     - name: Disable swap
       command: swapoff -a
-
+      # Add entries to hosts file
