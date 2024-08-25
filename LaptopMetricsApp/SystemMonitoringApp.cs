@@ -160,7 +160,7 @@ namespace SystemMonitoringApp
 
             // Create a gauge for used storage
             string sanitizedDriveName = drive.Name.Replace(":", "").Replace("\\", "_").Replace("/", "_").Replace(" ", "_").Replace(".", "_");
-            Metrics.CreateGauge("drive" + sanitizedDriveName + "_used_storage", "Drive Total Storage").Set(usedSpaceMB);
+            Metrics.CreateGauge("drive" + sanitizedDriveName + "_used_storage", "Drive Used Storage").Set(usedSpaceMB);
             Metrics.CreateGauge("drive" + sanitizedDriveName + "_total_storage", "Drive Total Storage").Set(totalSizeMB);
         }
     }

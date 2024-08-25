@@ -42,6 +42,7 @@
 
         # Give Minikube access to Docker Local Environment
         - name: Set local Docker Environment for minikube
+          become_user: ubuntu
           shell: eval $(minikube docker-env)
 
     - name: Setup, Download, and Deploy to Kubernetes with Helm
