@@ -71,7 +71,7 @@ app.UseHttpMetrics(); // Adds Prometheus metrics tracking to HTTP requests
 app.MapMetrics(); // Exposes the /metrics endpoint for Prometheus scraping
 app.MapControllers(); // Maps controller routes
 
-app.MapPost("/metrics", () =>
+app.MapGet("/metrics", () =>
 {
     LaptopMetrics laptopMetrics = new LaptopMetrics(
         GetMetrics.GetCPUUsage(),
