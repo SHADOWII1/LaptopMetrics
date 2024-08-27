@@ -141,7 +141,7 @@ Most of the security Aspects are not implemented in the development of the cloud
 
 Data ownership rights can vary depending on the laws and regulations of different countries. Therefore, it is important to ensure that agreements with the cloud provider comply with the legal requirements of the respective country, especially when personal data is collected.  
 
-##  2. <a name='part-ii-the-development-of-cloud-native-application'></a>Part II: The development of Cloud Native Application
+##  2. <a name='part-ii-the-development-of-cloud-native-application'></a>Part II: The development of a Cloud Native Application
 
 ### 2.1 Structure
 
@@ -186,11 +186,11 @@ Internally, Prometheus can scrape the data exposed by Grafana, the application, 
 
 | ![API_Swagger.png](img/API_Swagger.png) |
 |:--:| 
-| *Swagger UI* |
+| *Swagger UI for the backend* |
 
 | ![LaptopMetrics_Grafana_1.png](img/LaptopMetrics_Grafana_1.png)![LaptopMetrics_Grafana_2.png](img/LaptopMetrics_Grafana_2.png) |
 |:--:| 
-| *Grafana Dashboard for LaptopMetrics* |
+| *Grafana Dashboard for the frontend* |
 
 ### Implementation
 
