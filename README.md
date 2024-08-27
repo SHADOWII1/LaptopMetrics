@@ -143,3 +143,5 @@ Data ownership rights can vary depending on the laws and regulations of differen
 
 ##  2. <a name='part-ii-the-development-of-cloud-native-application'></a>Part II: The development of Cloud Native Application
 
+
+<img src="img/Architecture.svg" alt="architecture" width="100%" class="center"/>
