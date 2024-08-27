@@ -145,13 +145,16 @@ Data ownership rights can vary depending on the laws and regulations of differen
 
 ### 2.1 Structure
 
-LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The application's purpose is to run on the host system and gather real-time data on the state of the CPU, RAM, storage, and network connectivity. Instead of developing a frontend to visualize the retrieved data, a decision was made to use Grafana for this purpose. The backend is supported by MyAPI, a REST API that provides a UI for developers to test the app and access all endpoints. The application offers one endpoint, with a GET operation to retrieve the scraped data.
+LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The application's purpose is to run on the host system and gather real-time data on the state of the CPU, RAM, storage, and network connectivity. Instead of developing a frontend to visualize the retrieved data, a decision was made to use Grafana for this purpose. The backend is supported by MyAPI, a REST API that provides a Swagger UI for developers to test the app and access all endpoints. The application offers one endpoint, with a POST operation to expose the scraped data.
+
+
+| ![Architecture.svg](img/Architecture.svg) | 
+|:--:| 
+| *Architecture Overview* |
 
 In addition to the REST API handling the backend, Prometheus libraries for .NET applications are also included. On one hand, these libraries allow developers to use predefined functions to append the /metrics endpoint with the necessary data, formatted in a way that Prometheus can easily target. On the other hand, this setup enables monitoring of the application; the Prometheus dependency injects the app with the necessary metrics, which can then be scraped by Prometheus.
 
 Once the application is set up and ready, it should expose the host system's metrics at the `/metrics` endpoint, along with its own performance data. Prometheus will retrieve this data and expose it to Grafana, which will then allow the creation of dashboards for each component.
-
-<img src="img/Architecture.svg" alt="architecture" width="100%" class="center"/>
 
 The virtual machine hosted in the cloud is divided into two environments: a Docker environment and a Kubernetes environment. Each environment offers a range of benefits, and the idea is to leverage the strengths of each one.
 
