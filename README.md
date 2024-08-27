@@ -147,19 +147,9 @@ Data ownership rights can vary depending on the laws and regulations of differen
 
 LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The application's purpose is to run on the host system and gather real-time data on the state of the CPU, RAM, storage, and network connectivity. Instead of developing a frontend to visualize the retrieved data, a decision was made to use Grafana for this purpose. The backend is supported by MyAPI, a REST API that provides a Swagger UI for developers to test the app and access all endpoints. The application offers one endpoint, with a POST operation to expose the scraped data.
 
-
 | ![Architecture.svg](img/Architecture.svg) | 
 |:--:| 
 | *Architecture Overview* |
-
-
-| ![API_Swagger.png](img/API_Swagger.png) |
-|:--:| 
-| *Swagger UI* |
-
-| ![LaptopMetrics_Grafana_1.png](img/LaptopMetrics_Grafana_1.png)![LaptopMetrics_Grafana_2.png](img/LaptopMetrics_Grafana_2.png) |
-|:--:| 
-| *Grafana Dashboard for LaptopMetrics* |
 
 In addition to the REST API handling the backend, Prometheus libraries for .NET applications are also included. On one hand, these libraries allow developers to use predefined functions to append the /metrics endpoint with the necessary data, formatted in a way that Prometheus can easily target. On the other hand, this setup enables monitoring of the application; the Prometheus dependency injects the app with the necessary metrics, which can then be scraped by Prometheus.
 
@@ -193,6 +183,18 @@ Using Docker Engine, Minikube creates a Kubernetes cluster to host pods for Lapt
 NodePort is also used for Grafana and Prometheus, with the aim of exposing their traffic to the virtual machine locally for debugging and testing purposes. Accessing the Minikube fixed IP address and the designated ports—30020 for Grafana and 30010 for Prometheus—will allow access to the pods outside of the Kubernetes Cluster.
 
 Internally, Prometheus can scrape the data exposed by Grafana, the application, and itself using the name of each service and the assigned internal port.
+
+| ![API_Swagger.png](img/API_Swagger.png) |
+|:--:| 
+| *Swagger UI* |
+
+| ![LaptopMetrics_Grafana_1.png](img/LaptopMetrics_Grafana_1.png)![LaptopMetrics_Grafana_2.png](img/LaptopMetrics_Grafana_2.png) |
+|:--:| 
+| *Grafana Dashboard for LaptopMetrics* |
+
+### Implementation
+
+
 
 
 
