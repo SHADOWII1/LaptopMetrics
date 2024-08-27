@@ -157,8 +157,7 @@ LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The app
 |:--:| 
 | *Swagger UI* |
 
-| ![LaptopMetrics_Grafana_1.png](img/LaptopMetrics_Grafana_1.png)
-![LaptopMetrics_Grafana_2.png](img/LaptopMetrics_Grafana_2.png) |
+| ![LaptopMetrics_Grafana_1.png](img/LaptopMetrics_Grafana_1.png)![LaptopMetrics_Grafana_2.png](img/LaptopMetrics_Grafana_2.png) |
 |:--:| 
 | *Grafana Dashboard for LaptopMetrics* |
 
