@@ -152,6 +152,16 @@ LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The app
 |:--:| 
 | *Architecture Overview* |
 
+
+| ![API_Swagger.png](img/API_Swagger.png) |
+|:--:| 
+| *Swagger UI* |
+
+| ![LaptopMetrics_Grafana_1.png](img/LaptopMetrics_Grafana_1.png)
+![LaptopMetrics_Grafana_2.png](img/LaptopMetrics_Grafana_2.png) |
+|:--:| 
+| *Grafana Dashboard for LaptopMetrics* |
+
 In addition to the REST API handling the backend, Prometheus libraries for .NET applications are also included. On one hand, these libraries allow developers to use predefined functions to append the /metrics endpoint with the necessary data, formatted in a way that Prometheus can easily target. On the other hand, this setup enables monitoring of the application; the Prometheus dependency injects the app with the necessary metrics, which can then be scraped by Prometheus.
 
 Once the application is set up and ready, it should expose the host system's metrics at the `/metrics` endpoint, along with its own performance data. Prometheus will retrieve this data and expose it to Grafana, which will then allow the creation of dashboards for each component.
