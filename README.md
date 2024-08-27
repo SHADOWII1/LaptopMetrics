@@ -143,5 +143,44 @@ Data ownership rights can vary depending on the laws and regulations of differen
 
 ##  2. <a name='part-ii-the-development-of-cloud-native-application'></a>Part II: The development of Cloud Native Application
 
+### 2.1 Structure
+
+LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The application's purpose is to run on the host system and gather real-time data on the state of the CPU, RAM, storage, and network connectivity. Instead of developing a frontend to visualize the retrieved data, a decision was made to use Grafana for this purpose. The backend is supported by MyAPI, a REST API that provides a UI for developers to test the app and access all endpoints. The application offers one endpoint, with a GET operation to retrieve the scraped data.
+
+In addition to the REST API handling the backend, Prometheus libraries for .NET applications are also included. On one hand, these libraries allow developers to use predefined functions to append the /metrics endpoint with the necessary data, formatted in a way that Prometheus can easily target. On the other hand, this setup enables monitoring of the application; the Prometheus dependency injects the app with the necessary metrics, which can then be scraped by Prometheus.
+
+Once the application is set up and ready, it should expose the host system's metrics at the `/metrics` endpoint, along with its own performance data. Prometheus will retrieve this data and expose it to Grafana, which will then allow the creation of dashboards for each component.
 
 <img src="img/Architecture.svg" alt="architecture" width="100%" class="center"/>
+
+The virtual machine hosted in the cloud is divided into two environments: a Docker environment and a Kubernetes environment. Each environment offers a range of benefits, and the idea is to leverage the strengths of each one.
+
+The Docker environment is configured as a development and testing environment, offering benefits such as *simplicity*, *quick iteration*, and *direct control*. Additionally, it ensures *service continuity* in case of downtime in the production environment.
+
+| **Advantage**          | **Description**                                                                                                                                               |
+|------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Simplicity**         | Docker is easy to set up, making it ideal for quickly getting your LaptopMetrics application running in a local or testing environment.                        |
+| **Quick Iteration**    | Docker allows for rapid prototyping, unit testing, and debugging, which speeds up the development cycle of your application.                                   |
+| **Direct Control**     | Provides hands-on management of containers, making it easier to start, stop, and interact with the application during development.                             |
+| **Service Continuity** | Docker can act as a fallback environment if Kubernetes encounters downtime, ensuring your application remains accessible.                                      |
+
+The Kubernetes environment is configured as the production environment, offering *scalability*, *load balancing*, *high availability*, *resource optimization*, and *advanced orchestration*.
+
+| **Advantage**              | **Description**                                                                                                                                                     |
+|----------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Scalability**            | Kubernetes supports advanced scaling capabilities, which is critical for handling high traffic in your LaptopMetrics application.                                     |
+| **Load Balancing**         | Automatically manages load distribution across your cluster, ensuring that the application remains responsive under varying loads.                                    |
+| **High Availability**      | Kubernetes provides redundancy and automatic failover, which enhances the reliability and uptime of your application.                                                |
+| **Resource Optimization**  | Kubernetes dynamically manages resources, which can optimize costs and performance in production environments.                                                       |
+| **Advanced Orchestration** | Facilitates complex tasks like rolling updates, self-healing, and automatic scaling, making it ideal for managing your application in production.                    |
+
+When Docker is set up, it should run the images for LaptopMetrics, Prometheus, and Grafana. Each service can be accessed from the internet using the floating IP address, which allows external access to the virtual machine hosted in OpenStack, and the corresponding port `http://<Virtual Machine IP>:<Image Port>`. LaptopMetrics is assigned to port 9100, Prometheus to 9090, and Grafana to 3000.
+
+Using Docker Engine, Minikube creates a Kubernetes cluster to host pods for LaptopMetrics, Grafana, and Prometheus. LaptopMetrics is configured with a simple ingress controller, which can resolve the hostname set for LaptopMetrics (app.laptopmonitoring.com) and direct traffic to the application. As mentioned earlier, since the application does not require a user interface, accessing http://app.laptopmonitoring.com will return an empty page. However, using the `/metrics` endpoint should return the scraped data, including both the internal stats of the application and the performance data of the host machine.
+
+NodePort is also used for Grafana and Prometheus, with the aim of exposing their traffic to the virtual machine locally for debugging and testing purposes. Accessing the Minikube fixed IP address and the designated ports—30020 for Grafana and 30010 for Prometheus—will allow access to the pods outside of the Kubernetes Cluster.
+
+Internally, Prometheus can scrape the data exposed by Grafana, the application, and itself using the name of each service and the assigned internal port.
+
+
+

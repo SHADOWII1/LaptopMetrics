@@ -1,6 +1,6 @@
 @C__Project_HostAddress = http://0.0.0.0:9100
 
-GET {{C__Project_HostAddress}}/Getmetrics/
+POST {{C__Project_HostAddress}}/Getmetrics/
 
 Accept: application/json
 
