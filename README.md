@@ -371,3 +371,9 @@ GitHub Actions are used to automate the continuous integration (CI) process for 
 | ![github_actions.svg](img/github_actions.svg) |
 |:--:| 
 | *CI Process* |
+
+#### 3.3 <a name='monitoring-and-visualization'> Monitoring and Visualization
+
+##### 3.3.1 <a name='monitoring-with-prometheus'> Monitoring with Prometheus
+
+##### 3.3.2 <a name='visulatization-with-grafana'> Visualization with Grafana
