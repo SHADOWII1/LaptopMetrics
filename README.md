@@ -196,10 +196,43 @@ Internally, Prometheus can scrape the data exposed by Grafana, the application, 
 
 #### 3.1 <a name='project-structure'></a>Project Structure
 
-The project is structured as Monorepo, meaning that the source code of the application and the infrastructure are in the same repository, here is a top-level directory layout of the project:
+The project is structured as Monorepo, meaning that the source code of the application and the infrastructure are in the same repository, here is a directory layout of the project:
 
-```python
-LaptopMetrics
-|  .github\workflows
-|  
-````
+```html
+LaptopMetrics/                      <!--Main Directory-->
+┣ .github/                          <!--Automatically Build and Push-->
+┃ ┗ workflows/
+┣ DockerCompose/                    <!--Docker Compose for Grafana, Prometheus, and LaptopMetrics-->
+┃ ┣ ConfigFile_prometheus/
+┃ ┗ docker-compose.yml
+┣ helm_charts/                      <!--Helm files to deploy Kubernetes Cluster-->
+┃ ┗ LaptopMetricsApp/
+┣ img/                              <!--Media Used in Documentation-->
+┃ ┣ API_Swagger.png
+┃ ┣ Architecture.svg
+┃ ┣ LaptopMetrics_Grafana_1.png
+┃ ┗ LaptopMetrics_Grafana_2.png
+┣ LaptopMetricsApp/                 <!--C# Source Code to LaptopMetrics-->
+┃ ┣ bin/
+┃ ┣ obj/
+┃ ┣ Properties/
+┃ ┣ appsettings.Development.json
+┃ ┣ appsettings.json
+┃ ┣ C#_Project.csproj
+┃ ┣ C#_Project.http
+┃ ┣ C#_Project.sln
+┃ ┣ Dockerfile
+┃ ┣ Program.cs
+┃ ┗ SystemMonitoringApp.cs
+┣ Terraform/                        <!--Terraform files for the provision of the Virtual Machine-->
+┃ ┣ .terraform/
+┃ ┣ Ansible/                        <!--Ansible files for the configuration of the Virtual Machine-->
+┃ ┣ .terraform.lock.hcl
+┃ ┣ main.tf
+┃ ┣ terraform.tfstate
+┃ ┣ terraform.tfstate.backup
+┃ ┣ terraform.tfvars
+┃ ┗ variables.tf
+┣ hosts.cfg                         <!--Automatically generated, Contained the Floating IP address of the VM-->
+┗ README.md                         <!--Documentation-->
+```
