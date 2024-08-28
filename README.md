@@ -302,26 +302,28 @@ Ansible/                         <!--Main Directory-->
 By the end of the process, the VM should be running both the Docker and Kubernetes environments. The process is divided into three steps:
 
 1. **First Step:** 
-   - The first playbook installs all required system packages and essential tools, including Docker and Kubernetes.
-   ```bash
-   # Run Ansible Playbook
-   ansible-playbook -i ../../hosts.cfg deploy-k8s.yml --private-key Key/Hamza_Key.pm
-   ```
+- The first playbook installs all required system packages and essential tools, including Docker and Kubernetes.
+
+```bash
+# Run Ansible Playbook
+ansible-playbook -i ../../hosts.cfg deploy-k8s.yml --private-key Key/Hamza_Key.pm
+```
 
 | ![Ansible_Configure_VM.gif](img/Ansible_Configure_VM.gif) |
 |:--:| 
 | *First Step Process* |
 
 2. **Second Step:** 
-   - This step focuses on setting up the Docker environment and running all required images (LaptopMetrics, Prometheus, Grafana) using Docker Compose. The necessary Docker Compose files are located in the `DockerCompose` folder.
-   - Additionally, the source code of LaptopMetrics is copied to the host, built, and pushed to Docker Hub. The Docker Compose setup then pulls the application image.
-   ```bash
-   #Change Directory to docker
-   cd docker
+- This step focuses on setting up the Docker environment and running all required images (LaptopMetrics, Prometheus, Grafana) using Docker Compose. The necessary Docker Compose files are located in the `DockerCompose` folder.
+- Additionally, the source code of LaptopMetrics is copied to the host, built, and pushed to Docker Hub. The Docker Compose setup then pulls the application image.
 
-   # Run Ansible Playbook
-   ansible-playbook -i ../../../hosts.cfg deploy-docker.yml --private-key Key/Hamza_Key.pm --ask-vault-pass
-   ```
+```bash
+#Change Directory to docker
+cd docker
+
+# Run Ansible Playbook
+ansible-playbook -i ../../../hosts.cfg deploy-docker.yml --private-key Key/Hamza_Key.pm --ask-vault-pass
+```
    
 | ![Ansible_Docker.gif](img/Ansible_Docker.gif) |
 |:--:| 
@@ -329,25 +331,23 @@ By the end of the process, the VM should be running both the Docker and Kubernet
    
    - By the end of this step, the images should be up and running. You can check the state of the running Docker images with the following command:
 
-   ```bash
-   # Show running images
-   docker ps
-   ```
+```bash
+# Show running images
+docker ps
+```
    
-   | ![docker_ps.gif](img/docker_ps.gif) |
-   |:--:| 
-   | *Running Images in Docker* |
+| ![docker_ps.gif](img/docker_ps.gif) |
+|:--:| 
+| *Running Images in Docker* |
 
 3. **Third Step:**
-
-   - In this step, the Kubernetes cluster is deployed using Minikube with Docker as the engine.  
-   A fixed IP address must be set for Minikube, which is used to set up a domain name for Ingress in `/etc/hosts`. In this project, the IP address is set to `192.168.49.2`, ensuring that the IP is consistent each time the Minikube cluster is deployed.  
-   - After starting Minikube, the `helm_charts` directory is copied to the host machine, and Kubernetes is deployed.
+- In this step, the Kubernetes cluster is deployed using Minikube with Docker as the engine. A fixed IP address must be set for Minikube, which is used to set up a domain name for Ingress in `/etc/hosts`. In this project, the IP address is set to `192.168.49.2`, ensuring that the IP is consistent each time the Minikube cluster is deployed.  
+- After starting Minikube, the `helm_charts` directory is copied to the host machine, and Kubernetes is deployed.
    
-   ```bash
-   # Run Ansible Playbook
-   ansible-playbook -i ../../hosts.cfg deploy-helm.yml --private-key Key/Hamza_Key.pm
-   ```
+```bash
+# Run Ansible Playbook
+ansible-playbook -i ../../hosts.cfg deploy-helm.yml --private-key Key/Hamza_Key.pm
+```
    
 | ![Ansible_Helm.gif](img/Ansible_Helm.gif) |
 |:--:| 
@@ -355,14 +355,14 @@ By the end of the process, the VM should be running both the Docker and Kubernet
    
    - To check the status of the pods, services, and Ingress, run the following command:
 
-   ```bash
-   #Show kubernetes Services, Pods, and Ingress
-   kubectl get svc,po,ingress
-   ```
+```bash
+#Show kubernetes Services, Pods, and Ingress
+kubectl get svc,po,ingress
+```
    
-   | ![kubectl_svc.gif](img/kubectl_svc.gif) |
-   |:--:| 
-   | *The Services, Pods, and Ingress running in Kubernetes* |
+| ![kubectl_svc.gif](img/kubectl_svc.gif) |
+|:--:| 
+| *The Services, Pods, and Ingress running in Kubernetes* |
 
 ##### 3.2.3 <a name='ci-cd-with-github-actions'></a> CI/CD with Github Actions
 
