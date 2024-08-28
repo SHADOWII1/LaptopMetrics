@@ -267,7 +267,35 @@ terraform apply
 |:--:| 
 | *Virtual Machine Provision with Terraform in Openstack* |
 
+After running the command successfuly the VM could be accessed through the generated floating IP address in the hosts.cfg file and the user name with is ubuntu by default. The use of the key generated in openstack platform is necessary:
+
+```bash
+# Change to Ansible Directory
+cd Ansible
+
+# Establish ssh connection
+ssh -i Key/Hamza_Key.pem ubuntu@141.72.188.109
+
+```
+| ![Terraform_Init_Apply.gif](img/ssh_connection.gif) |
+|:--:| 
+| *SSH Connection to The VM* |
+
 
 ##### 3.2.2 <a name='virtual-machine-configuration-ansible'></a> Virtual Machine Configuration with Ansible
 
 
+```html
+Ansible/                         <!--Main Directory-->
+┣ docker/                        <!--Contains Ansible Playbook to setup docker Images in VM-->
+┃ ┣ ansible.cfg
+┃ ┣ docker_hub.yml               <!--Ansible Playbook to Setup Docker Images-->
+┃ ┗ docker_hub_credentials.yml   <!--Credentials to connect to Docker Hub-->
+┣ Key/
+┃ ┗ Hamza_Key.pem                <!--Key to establish connection with the VM-->
+┣ ansible.cfg
+┣ deploy-helm.yml                <!--Ansible Playbook to setup Helm-->
+┣ deploy-k8s.yml                 <!--Ansible Playbook to install Docker and Kubernetes-->
+┗ hosts.tpl                      <!--Template file used by terraform to putput the hosts IP address-->
+
+```
