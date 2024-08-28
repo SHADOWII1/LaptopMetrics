@@ -27,6 +27,7 @@
       - [2.2.3  Monitoring and Visualization](#223--monitoring-and-visualization)
         - [2.2.3.1  Monitoring with Prometheus](#2231--monitoring-with-prometheus)
         - [2.2.3.2  Visualization with Grafana](#2232--visualization-with-grafana)
+  - [3.  Conclusion and Future Outlook](#3--conclusion-and-future-outlook)
 
 
 ##  1. <a name='part-i-why-cloud-native-app'></a> Part I: Why Cloud Native Application? [Prof. Dr. Christoph Sturm]
@@ -430,3 +431,11 @@ This command forwards traffic from the local port `3002` to the port `30020` on 
 | ![ssh_grafana.gif](img/ssh_grafana.gif) |
 |:--:| 
 | *Grafana in Kubernetes Environment* |
+
+##  3. <a name='conclusion-and-future-outlook'></a> Conclusion and Future Outlook
+
+To that end, this project involves the development and deployment of a cloud-native application, `LaptopMetrics`, using a suite of technologies: `Terraform`, `Ansible`, `Docker`, and `Kubernetes`. The application is managed in an `OpenStack` environment, with `Prometheus` and `Grafana` providing comprehensive insights into system performance and application health through monitoring and visualization.
+
+CI/CD pipelines are implemented through `GitHub Actions`, automating the build and deployment process, and ensuring the application remains up-to-date with minimal manual intervention. This project demonstrates the utility of cloud-native architectures and showcases how modern tools can effectively automate and streamline the entire development lifecycle.
+
+Looking ahead, several improvements could be made to further enhance the project. Advanced monitoring capabilities, such as alerting, could provide deeper insights into application behavior and system performance. Implementing security best practices, including network policies, vulnerability scanning of images, and automated vulnerability assessments, would further enhance the security of the infrastructure. Additionally, automating rollbacks within the CI/CD pipeline would create a more robust deployment process by quickly reverting changes when issues arise. Completing the existing documentation with detailed setup instructions, user guides, and troubleshooting tips would make the system more accessible and easier to manage for future developers and operators.
