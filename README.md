@@ -25,7 +25,7 @@
 
 2. [Part II: The Development of Cloud Native Application](#part-ii-the-development-of-cloud-native-application)
 
-##  1. <a name='part-i-why-cloud-native-app'></a>Part I: Why Cloud Native Application?
+##  1. <a name='part-i-why-cloud-native-app'></a> Part I: Why Cloud Native Application?
 
 ###  1.1. <a name='introduction'></a> Introduction
 
@@ -141,9 +141,9 @@ Most of the security Aspects are not implemented in the development of the cloud
 
 Data ownership rights can vary depending on the laws and regulations of different countries. Therefore, it is important to ensure that agreements with the cloud provider comply with the legal requirements of the respective country, especially when personal data is collected.  
 
-##  2. <a name='part-ii-the-development-of-cloud-native-application'></a>Part II: The development of a Cloud Native Application
+##  2. <a name='part-ii-the-development-of-cloud-native-application'></a> Part II: The development of a Cloud Native Application
 
-### 2.1 <a name='architecture'></a>Architecture
+### 2.1 <a name='architecture'></a> Architecture
 
 LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The application's purpose is to run on the host system and gather real-time data on the state of the CPU, RAM, storage, and network connectivity. Instead of developing a frontend to visualize the retrieved data, a decision was made to use Grafana for this purpose. The backend is supported by MyAPI, a REST API that provides a Swagger UI for developers to test the app and access all endpoints. The application offers one endpoint, with a POST operation to expose the scraped data.
 
@@ -192,9 +192,9 @@ Internally, Prometheus can scrape the data exposed by Grafana, the application, 
 |:--:| 
 | *Grafana Dashboard for the frontend* |
 
-### 3. <a name='implementation'></a>Implementation
+### 3. <a name='implementation'></a> Implementation
 
-#### 3.1 <a name='project-structure'></a>Project Structure
+#### 3.1 <a name='project-structure'></a> Project Structure
 
 The project is structured as Monorepo, meaning that the source code of the application and the infrastructure are in the same repository, here is a directory layout of the project:
 
@@ -236,3 +236,38 @@ LaptopMetrics/                      <!--Main Directory-->
 ┣ hosts.cfg                         <!--Automatically generated, Contained the Floating IP address of the VM-->
 ┗ README.md                         <!--Documentation-->
 ```
+| **Folder**           | **Description**                                                                                                                                                            |
+|----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **DockerCompose**    | Contains the files required to deploy the images for LaptopMetrics, Prometheus, and Grafana. These are used during the configuration process of the Virtual Machine to set up the Docker environment and run the images. |
+| **helm_charts**      | Contains the necessary files to deploy the Kubernetes cluster for LaptopMetrics, Prometheus, and Grafana.                                                                   |
+| **Img**              | Holds the media files used in the documentation.                                                                                                                            |
+| **LaptopMetrics**    | Contains the source code for the LaptopMetrics application.                                                                                                                 |
+| **Terraform**        | Contains the Terraform configuration files for provisioning the Virtual Machine in OpenStack. Additionally, it includes a subfolder for the Ansible playbooks to configure the Virtual Machine with the necessary requirements. |
+| **.github/workflows**| Defines the automated CI/CD processes that run after push or pull actions on the main branch.                                                                               |
+
+#### 3.2 <a name='virtual-machine-setup-and-configuration'></a> Virtual Machine Provision and Configuration
+
+##### 3.2.1 <a name='virtual-machine-provision-terraform'></a> Virtual Machine Provision with Terraform
+
+As mentioned previously, Terraform is an infrastructure-as-code tool that allows you to define and manage an infrastructure in a declarative configuration language. In this project, Terraform is configured to work with the OpenStack provider, enabling the automated provisioning and management of Virtual Machine, that will host Docker and Kubernetes in an OpenStack environment. The `main.tf` file contains the core configuration, including resource definitions and provider settings. The `variables.tf` file defines the input variables used in the configuration, while the `terraform.tfvars` file stores the values for these variables, allowing for easy customization of the environment.
+
+Running the followings commands, will result in the creation of a virtual machine, with the configuration specified in the terraform files:
+
+```bash
+# Change to terraform Directory
+cd terraform
+
+# Download provider resources
+terraform init
+
+# Apply the deployment
+terraform apply
+```
+| ![Terraform_Init_Apply.gif](img/Terraform_Init_Apply.gif) |
+|:--:| 
+| *Virtual Machine Provision with Terraform in Openstack* |
+
+
+##### 3.2.2 <a name='virtual-machine-configuration-ansible'></a> Virtual Machine Configuration with Ansible
+
+
