@@ -4,20 +4,32 @@
 
 # Table of Contents
 
-1. [Part I: Why Cloud Native Application?](#part-i-why-cloud-native-app)
-   1. [Introduction](#introduction)
-   2. [The Advantages and Disadvantages of Cloud Native Approach](#the-advantages-and-disadvantages-of-cloud-native-approach)
-      1. [The Advantages of Cloud Native Approach](#the-advantages-of-cloud-native-approach)
-      2. [The Disadvantages of Cloud Native Approach](#the-disadvantages-of-cloud-native-approach)
-   3. [Alternatives to Cloud Native Approach](#alternatives-to-cloud-native-approach)
-      1. [Traditional Monolithic Applications](#traditional-monolithic-applications)
-      2. [Hybrid Cloud Models](#hybrid-cloud-models)
-      3. [Serverless Computing](#serverless-computing)
-   4. [Data Security and The GDPR](#data-security-and-the-gdpr)
+- [Cloud Native Application: LaptopMetrics](#cloud-native-application-laptopmetrics)
+- [Table of Contents](#table-of-contents)
+  - [1.  Part I: Why Cloud Native Application? \[Prof. Dr. Christoph Sturm\]](#1--part-i-why-cloud-native-application-prof-dr-christoph-sturm)
+    - [1.1.  Introduction](#11--introduction)
+    - [1.2.  The Advantages and Disadvantages of Cloud Native Approach](#12--the-advantages-and-disadvantages-of-cloud-native-approach)
+      - [1.2.1  The Advantages of Cloud Native Approach](#121--the-advantages-of-cloud-native-approach)
+      - [1.2.2  The Disadvantages of Cloud Native Approach](#122--the-disadvantages-of-cloud-native-approach)
+    - [1.3.  Alternatives to Cloud Native Approach](#13--alternatives-to-cloud-native-approach)
+      - [1.3.1  Traditional Monolithic Applications](#131--traditional-monolithic-applications)
+      - [1.3.2  Hybrid Cloud Models](#132--hybrid-cloud-models)
+      - [1.3.2  Serverless Computing](#132--serverless-computing)
+    - [1.4.  Data Security and The GDPR](#14--data-security-and-the-gdpr)
+  - [2.  Part II: The development of a Cloud Native Application \[Prof. Dr.-Ing. habil. Dennis Pfisterer\]](#2--part-ii-the-development-of-a-cloud-native-application-prof-dr-ing-habil-dennis-pfisterer)
+    - [2.1  Architecture](#21--architecture)
+    - [3.  Implementation](#3--implementation)
+      - [3.1  Project Structure](#31--project-structure)
+      - [3.2  Virtual Machine Provision and Configuration](#32--virtual-machine-provision-and-configuration)
+        - [3.2.1  Virtual Machine Provision with Terraform](#321--virtual-machine-provision-with-terraform)
+        - [3.2.2  Virtual Machine Configuration with Ansible](#322--virtual-machine-configuration-with-ansible)
+        - [3.2.3  CI/CD with Github Actions](#323--cicd-with-github-actions)
+      - [3.3  Monitoring and Visualization](#33--monitoring-and-visualization)
+        - [3.3.1  Monitoring with Prometheus](#331--monitoring-with-prometheus)
+        - [3.3.2  Visualization with Grafana](#332--visualization-with-grafana)
 
-2. [Part II: The Development of Cloud Native Application](#part-ii-the-development-of-cloud-native-application)
 
-##  1. <a name='part-i-why-cloud-native-app'></a> Part I: Why Cloud Native Application?
+##  1. <a name='part-i-why-cloud-native-app'></a> Part I: Why Cloud Native Application? [Prof. Dr. Christoph Sturm]
 
 ###  1.1. <a name='introduction'></a> Introduction
 
@@ -133,7 +145,7 @@ Most of the security Aspects are not implemented in the development of the cloud
 
 Data ownership rights can vary depending on the laws and regulations of different countries. Therefore, it is important to ensure that agreements with the cloud provider comply with the legal requirements of the respective country, especially when personal data is collected.  
 
-##  2. <a name='part-ii-the-development-of-cloud-native-application'></a> Part II: The development of a Cloud Native Application
+##  2. <a name='part-ii-the-development-of-cloud-native-application'></a> Part II: The development of a Cloud Native Application [Prof. Dr.-Ing. habil. Dennis Pfisterer]
 
 ### 2.1 <a name='architecture'></a> Architecture
 
