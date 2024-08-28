@@ -368,5 +368,53 @@ GitHub Actions are used to automate the continuous integration (CI) process for 
 
 ##### 3.3.1 <a name='monitoring-with-prometheus'></a> Monitoring with Prometheus
 
+As mentioned previously, Prometheus is configured to monitor itself, Grafana, and LaptopMetrics. Since LaptopMetrics is a .NET application, its `/metrics` endpoint provides not only the data scraped from the host machine but also the performance metrics of the application itself.
+
+| ![prometheus_with_local.png](img/prometheus_with_local.png) |
+|:--:| 
+| *Prometheus Targets* |
+
+In the Docker environment, Prometheus can be accessed through the floating IP address of the Virtual Machine on port `9090`.
+
+| ![prometheus_vm.gif](img/prometheus_vm.gif) |
+|:--:| 
+| *Prometheus in Docker Environment* |
+
+
+However, accessing Prometheus in the Kubernetes environment requires additional steps. First, a NodePort service is needed to expose Prometheus outside of the Kubernetes cluster. After setting up the NodePort, An SSH tunnel with port forwarding using the following command:
+
+```bash
+ssh -i Key/Hamza_Key.pem -L 3001:192.168.49.2:30010 -N ubuntu@141.72.188.109 -v
+```
+
+This command forwards traffic from the local port `3001` to port `30010` on the virtual machine (141.72.188.109), allowing the access to Prometheus running in the Kubernetes cluster through http://localhost:3001.
+
+| ![ssh_prometheus.gif](img/ssh_prometheus.gif) |
+|:--:| 
+| *Prometheus in Kubernetes Environment* |
 
 ##### 3.3.2 <a name='visulatization-with-grafana'></a> Visualization with Grafana
+
+Grafana is used to visualize all the data scraped by Prometheus, and it is also configured to expose its own metrics to Prometheus. Each target has its own dedicated dashboard created for it.
+
+| ![Grafana_Dashboard.png](img/Grafana_Dashboard.png) |
+|:--:| 
+| *Grafana Dashboards* |
+
+Similar to Prometheus, Grafana can be accessed in the Docker environment through the floating IP address of the virtual machine on port `3000`.
+
+| ![prometheus_vm.gif](img/grafana_vm.gif) |
+|:--:| 
+| *Grafana in Docker Environment* |
+
+In the Kubernetes environment, a similar technique is used to access Grafana, but with a different port. You can use the following SSH command to create a tunnel with port forwarding:
+
+```bash
+ssh -i Key/Hamza_Key.pem -L 3002:192.168.49.2:30020 -N ubuntu@141.72.188.109 -v
+```
+
+This command forwards traffic from the local port `3002` to the port `30020` on the virtual machine (141.72.188.109), where Grafana is exposed in the Kubernetes cluster, allowing access via http://localhost:3002.
+
+| ![ssh_grafana.gif](img/ssh_grafana.gif) |
+|:--:| 
+| *Grafana in Kubernetes Environment* |
