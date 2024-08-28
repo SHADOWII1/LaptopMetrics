@@ -143,7 +143,7 @@ Data ownership rights can vary depending on the laws and regulations of differen
 
 ##  2. <a name='part-ii-the-development-of-cloud-native-application'></a>Part II: The development of a Cloud Native Application
 
-### 2.1 Structure
+### 2.1 <a name='architecture'></a>Architecture
 
 LaptopMetrics is a C# web application developed using ASP.NET Core v8.0. The application's purpose is to run on the host system and gather real-time data on the state of the CPU, RAM, storage, and network connectivity. Instead of developing a frontend to visualize the retrieved data, a decision was made to use Grafana for this purpose. The backend is supported by MyAPI, a REST API that provides a Swagger UI for developers to test the app and access all endpoints. The application offers one endpoint, with a POST operation to expose the scraped data.
 
@@ -192,9 +192,14 @@ Internally, Prometheus can scrape the data exposed by Grafana, the application, 
 |:--:| 
 | *Grafana Dashboard for the frontend* |
 
-### Implementation
+### 3. <a name='implementation'></a>Implementation
 
+#### 3.1 <a name='project-structure'></a>Project Structure
 
+The project is structured as Monorepo, meaning that the source code of the application and the infrastructure are in the same repository, here is a top-level directory layout of the project:
 
-
-
+```python
+LaptopMetrics
+|  .github\workflows
+|  
+````
