@@ -267,7 +267,7 @@ terraform apply
 |:--:| 
 | *Virtual Machine Provision with Terraform in Openstack* |
 
-After running the command successfuly the VM could be accessed through the generated floating IP address in the hosts.cfg file and the user name with is ubuntu by default. The use of the key generated in openstack platform is necessary:
+After running the command successfuly the VM could be accessed through the generated floating IP address in the hosts.cfg file and the user name which is ubuntu by default. The use of the key generated in openstack platform is necessary:
 
 ```bash
 # Change to Ansible Directory
@@ -275,7 +275,6 @@ cd Ansible
 
 # Establish ssh connection
 ssh -i Key/Hamza_Key.pem ubuntu@141.72.188.109
-
 ```
 | ![Terraform_Init_Apply.gif](img/ssh_connection.gif) |
 |:--:| 
@@ -284,6 +283,7 @@ ssh -i Key/Hamza_Key.pem ubuntu@141.72.188.109
 
 ##### 3.2.2 <a name='virtual-machine-configuration-ansible'></a> Virtual Machine Configuration with Ansible
 
+Ansible is located in a subfolder within the main Terraform directory and contains all the necessary playbooks to configure the Virtual Machine (VM). 
 
 ```html
 Ansible/                         <!--Main Directory-->
@@ -297,5 +297,77 @@ Ansible/                         <!--Main Directory-->
 ┣ deploy-helm.yml                <!--Ansible Playbook to setup Helm-->
 ┣ deploy-k8s.yml                 <!--Ansible Playbook to install Docker and Kubernetes-->
 ┗ hosts.tpl                      <!--Template file used by terraform to putput the hosts IP address-->
-
 ```
+
+By the end of the process, the VM should be running both the Docker and Kubernetes environments. The process is divided into three steps:
+
+1. **First Step:** 
+   - The first playbook installs all required system packages and essential tools, including Docker and Kubernetes.
+   ```bash
+   # Run Ansible Playbook
+   ansible-playbook -i ../../hosts.cfg deploy-k8s.yml --private-key Key/Hamza_Key.pm
+   ```
+
+| ![Ansible_Configure_VM.gif](img/Ansible_Configure_VM.gif) |
+|:--:| 
+| *First Step Process* |
+
+2. **Second Step:** 
+   - This step focuses on setting up the Docker environment and running all required images (LaptopMetrics, Prometheus, Grafana) using Docker Compose. The necessary Docker Compose files are located in the `DockerCompose` folder.
+   - Additionally, the source code of LaptopMetrics is copied to the host, built, and pushed to Docker Hub. The Docker Compose setup then pulls the application image.
+   ```bash
+   #Change Directory to docker
+   cd docker
+
+   # Run Ansible Playbook
+   ansible-playbook -i ../../../hosts.cfg deploy-docker.yml --private-key Key/Hamza_Key.pm --ask-vault-pass
+   ```
+   
+| ![Ansible_Docker.gif](img/Ansible_Docker.gif) |
+|:--:| 
+| *Second Step Process* |
+   
+   - By the end of this step, the images should be up and running. You can check the state of the running Docker images with the following command:
+
+   ```bash
+   # Show running images
+   docker ps
+   ```
+   
+   | ![docker_ps.gif](img/docker_ps.gif) |
+   |:--:| 
+   | *Running Images in Docker* |
+
+3. **Third Step:**
+
+   - In this step, the Kubernetes cluster is deployed using Minikube with Docker as the engine.  
+   A fixed IP address must be set for Minikube, which is used to set up a domain name for Ingress in `/etc/hosts`. In this project, the IP address is set to `192.168.49.2`, ensuring that the IP is consistent each time the Minikube cluster is deployed.  
+   - After starting Minikube, the `helm_charts` directory is copied to the host machine, and Kubernetes is deployed.
+   
+   ```bash
+   # Run Ansible Playbook
+   ansible-playbook -i ../../hosts.cfg deploy-helm.yml --private-key Key/Hamza_Key.pm
+   ```
+   
+| ![Ansible_Helm.gif](img/Ansible_Helm.gif) |
+|:--:| 
+| *Third Step Process* |
+   
+   - To check the status of the pods, services, and Ingress, run the following command:
+
+   ```bash
+   #Show kubernetes Services, Pods, and Ingress
+   kubectl get svc,po,ingress
+   ```
+   
+   | ![kubectl_svc.gif](img/kubectl_svc.gif) |
+   |:--:| 
+   | *The Services, Pods, and Ingress running in Kubernetes* |
+
+##### 3.2.3 <a name='ci-cd-with-github-actions'></a> CI/CD with Github Actions
+
+GitHub Actions are used to automate the continuous integration (CI) process for building and pushing the LaptopMetrics Docker image whenever changes are made to the main branch. Triggered by push and pull request events on the main branch, the workflow runs on the latest Ubuntu environment. It begins by checking out the repository's code using the `actions/checkout` action. The workflow then logs into Docker Hub using the `docker/login-action`, leveraging secure credentials stored in GitHub Secrets. After setting up Docker Buildx for advanced build options, the workflow proceeds to build the Docker image from the LaptopMetrics main directory and pushes it to Docker Hub with the `latest` tag. Finally, it logs out from Docker Hub to ensure secure handling of credentials.
+
+| ![github_actions.svg](img/github_actions.svg) |
+|:--:| 
+| *CI Process* |
