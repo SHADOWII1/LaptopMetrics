@@ -1,11 +1,3 @@
-<style>
-  .center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-</style>
-
 # Cloud Native Application: LaptopMetrics
 
 **Name**: Hamza Harti | **Matrikelnummer**: 2431662 | **Modul**: W3M20035 | **Professoren**: Prof. Dr.-Ing. habil. Dennis Pfisterer & Prof. Dr. Christoph Sturm
@@ -375,5 +367,6 @@ GitHub Actions are used to automate the continuous integration (CI) process for 
 #### 3.3 <a name='monitoring-and-visualization'></a> Monitoring and Visualization
 
 ##### 3.3.1 <a name='monitoring-with-prometheus'></a> Monitoring with Prometheus
+
 
 ##### 3.3.2 <a name='visulatization-with-grafana'></a> Visualization with Grafana
