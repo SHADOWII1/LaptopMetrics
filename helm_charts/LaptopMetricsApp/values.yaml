@@ -3,7 +3,7 @@ laptopmonitoring:
   image:
     repository: shadowii/systemmonitoring:latest
     version: ""
-    tag: latest # use appVersion from Chart spec
+    tag: latest
     pullPolicy: IfNotPresent
     healthEndpoint: /
     initialDelaySeconds: 90
@@ -37,3 +37,4 @@ grafana:
   service:
     port: 3000
     targetPort: 3000
+    nodePort: 30010

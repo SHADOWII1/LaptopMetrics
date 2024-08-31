@@ -68,5 +68,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 3000
-      nodePort: 30020
+      targetPort: {{ .Values.grafana.service.targetPort }}
+      nodePort: {{ .Values.grafana.service.nodePort }}
