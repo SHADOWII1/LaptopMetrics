@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading;
 using Prometheus;
-using SystemMonitoringApp; // Assuming this contains GetMetrics class and methods
+using SystemMonitoringApp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container
 builder.Services.AddEndpointsApiExplorer();
 
-// Register the Swagger generator, defining 1 or more Swagger documents
+//Register Swagger
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
@@ -34,7 +34,7 @@ static void CpuThread()
         GetMetrics.GetNetworkData();
         
         // Add a sleep interval to reduce CPU usage
-        Thread.Sleep(1000); // Adjust the interval as needed
+        Thread.Sleep(1000);
     }
 }
 
@@ -55,21 +55,18 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// If you're running in production, you may still want to enable Swagger
-// To do this, you might want to check if you have access to the Swagger JSON
-app.UseSwagger(); // Optional: you can use this in production as well
+app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-    c.RoutePrefix = "swagger"; // Set Swagger UI at /swagger
+    c.RoutePrefix = "swagger";
 });
 
-// Configure other middleware
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseHttpMetrics(); // Adds Prometheus metrics tracking to HTTP requests
-app.MapMetrics(); // Exposes the /metrics endpoint for Prometheus scraping
-app.MapControllers(); // Maps controller routes
+app.UseHttpMetrics();   // Adds Prometheus metrics tracking to HTTP requests
+app.MapMetrics();       // Exposes the /metrics endpoint for Prometheus scraping
+app.MapControllers();   // Maps controller routes
 
 app.MapPost("/metrics", () =>
 {

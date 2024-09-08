@@ -17,16 +17,17 @@
       - [1.3.2  Serverless Computing](#132--serverless-computing)
     - [1.4.  Data Security and The GDPR](#14--data-security-and-the-gdpr)
   - [2.  Part II: The development of a Cloud Native Application \[Prof. Dr.-Ing. habil. Dennis Pfisterer\]](#2--part-ii-the-development-of-a-cloud-native-application-prof-dr-ing-habil-dennis-pfisterer)
-    - [2.1  Architecture](#21--architecture)
-    - [2.2  Implementation](#22--implementation)
-      - [2.2.1  Project Structure](#221--project-structure)
-      - [2.2.2  Virtual Machine Provision and Configuration](#222--virtual-machine-provision-and-configuration)
-        - [2.2.2.1  Virtual Machine Provision with Terraform](#2221--virtual-machine-provision-with-terraform)
-        - [2.2.2.2  Virtual Machine Configuration with Ansible](#2222--virtual-machine-configuration-with-ansible)
-        - [2.2.2.3  CI/CD with Github Actions](#2223--cicd-with-github-actions)
-      - [2.2.3  Monitoring and Visualization](#223--monitoring-and-visualization)
-        - [2.2.3.1  Monitoring with Prometheus](#2231--monitoring-with-prometheus)
-        - [2.2.3.2  Visualization with Grafana](#2232--visualization-with-grafana)
+    - [2.1  Objective](#21--objective)
+    - [2.2  Architecture](#22--architecture)
+    - [2.3  Implementation](#23--implementation)
+      - [2.3.1  Project Structure](#231--project-structure)
+      - [2.3.2  Virtual Machine Provision and Configuration](#232--virtual-machine-provision-and-configuration)
+        - [2.3.2.1  Virtual Machine Provision with Terraform](#2321--virtual-machine-provision-with-terraform)
+        - [2.3.2.2  Virtual Machine Configuration with Ansible](#2322--virtual-machine-configuration-with-ansible)
+        - [2.3.2.3  CI/CD with Github Actions](#2323--cicd-with-github-actions)
+      - [2.3.3  Monitoring and Visualization](#233--monitoring-and-visualization)
+        - [2.3.3.1  Monitoring with Prometheus](#2331--monitoring-with-prometheus)
+        - [2.3.3.2  Visualization with Grafana](#2332--visualization-with-grafana)
   - [3.  Conclusion and Future Outlook](#3--conclusion-and-future-outlook)
 
 
@@ -148,7 +149,13 @@ Data ownership rights can vary depending on the laws and regulations of differen
 
 ##  2. <a name='part-ii-the-development-of-cloud-native-application'></a> Part II: The development of a Cloud Native Application [Prof. Dr.-Ing. habil. Dennis Pfisterer]
 
-### 2.1 <a name='architecture'></a> Architecture
+### 2.1 <a name='Objective'></a> Objective
+
+The goal of this project is to manage every phase, from architectural planning to design and implementation, using a cloud-native approach. The application, named `LaptopMetrics`, will be developed in C# as a monitoring solution. However, the primary focus will be on ensuring a fully cloud-native architecture with seamless deployment and scalability.
+
+Throughout both development and deployment, the project will leverage the full potential of cloud technologies. A key priority will be high-level automation, whether in provisioning cloud infrastructure or in streamlining its configuration. Additionally, critical aspects such as monitoring and local development within Kubernetes will be explored in depth. Ultimately, the application will embody the core principles of a cloud-native solution and be designed to handle the entire lifecycle efficiently in the cloud environment.
+
+### 2.2 <a name='architecture'></a> Architecture
 
 `LaptopMetrics` is a C# web application developed using ASP.NET Core v8.0. The application's purpose is to run on the host system and gather real-time data on the state of the CPU, RAM, storage, and network connectivity. Instead of developing a frontend to visualize the retrieved data, a decision was made to use Grafana for this purpose. The backend is supported by MyAPI, a REST API that provides a Swagger UI for developers to test the application and access all endpoints. The application offers one endpoint, with a POST operation to expose the scraped data.
 
@@ -197,16 +204,16 @@ Internally, Prometheus can scrape the data exposed by Grafana, LaptopMetrics, an
 |:--:| 
 | *Grafana Dashboard for the frontend* |
 
-### 2.2 <a name='implementation'></a> Implementation
+### 2.3 <a name='implementation'></a> Implementation
 
-#### 2.2.1 <a name='project-structure'></a> Project Structure
+#### 2.3.1 <a name='project-structure'></a> Project Structure
 
 The project is structured as Monorepo, meaning that the source code of the application and the infrastructure are in the same repository, here is a directory layout of the project:
 
 ```html
 LaptopMetrics/                   <!--Main Directory-->
 ┣ .github/                       <!--Automatically Build and Push-->
-┃ ┗ workflows/
+┃ ┗ workflows/                
 ┣ DockerCompose/                 <!--Docker Compose for Grafana, Prometheus, and LaptopMetrics-->
 ┃ ┣ ConfigFile_prometheus/
 ┃ ┗ docker-compose.yml
@@ -250,9 +257,9 @@ LaptopMetrics/                   <!--Main Directory-->
 | **Terraform**        | Contains the Terraform configuration files for provisioning the Virtual Machine in OpenStack. Additionally, it includes a subfolder for the Ansible playbooks to configure the Virtual Machine with the necessary requirements. |
 | **.github/workflows**| Defines the automated CI/CD processes that run after push or pull actions on the main branch.                                                                               |
 
-#### 2.2.2 <a name='virtual-machine-setup-and-configuration'></a> Virtual Machine Provision and Configuration
+#### 2.3.2 <a name='virtual-machine-setup-and-configuration'></a> Virtual Machine Provision and Configuration
 
-##### 2.2.2.1 <a name='virtual-machine-provision-terraform'></a> Virtual Machine Provision with Terraform
+##### 2.3.2.1 <a name='virtual-machine-provision-terraform'></a> Virtual Machine Provision with Terraform
 
 As mentioned previously, Terraform is an infrastructure-as-code tool that allows you to define and manage an infrastructure in a declarative configuration language. In this project, Terraform is configured to work with the OpenStack provider, enabling the automated provisioning and management of Virtual Machine, that will host Docker and Kubernetes in an OpenStack environment. The `main.tf` file contains the core configuration, including resource definitions and provider settings. The `variables.tf` file defines the input variables used in the configuration, while the `terraform.tfvars` file stores the values for these variables, allowing for easy customization of the environment.
 
@@ -286,7 +293,7 @@ ssh -i Key/Hamza_Key.pem ubuntu@141.72.188.109
 | *SSH Connection to The VM* |
 
 
-##### 2.2.2.2 <a name='virtual-machine-configuration-ansible'></a> Virtual Machine Configuration with Ansible
+##### 2.3.2.2 <a name='virtual-machine-configuration-ansible'></a> Virtual Machine Configuration with Ansible
 
 Ansible is located in a subfolder within the main Terraform directory and contains all the necessary playbooks to configure the Virtual Machine (VM). 
 
@@ -369,7 +376,7 @@ kubectl get svc,po,ingress
 |:--:| 
 | *The Services, Pods, and Ingress running in Kubernetes* |
 
-##### 2.2.2.3 <a name='ci-cd-with-github-actions'></a> CI/CD with Github Actions
+##### 2.3.2.3 <a name='ci-cd-with-github-actions'></a> CI/CD with Github Actions
 
 GitHub Actions are used to automate the continuous integration (CI) process for building and pushing the LaptopMetrics Docker image whenever changes are made to the main branch. Triggered by push and pull request events on the main branch, the workflow runs on the latest Ubuntu environment. It begins by checking out the repository's code using the `actions/checkout` action. The workflow then logs into Docker Hub using the `docker/login-action`, leveraging secure credentials stored in GitHub Secrets. After setting up Docker Buildx for advanced build options, the workflow proceeds to build the Docker image from the LaptopMetrics main directory and pushes it to Docker Hub with the `latest` tag. Finally, it logs out from Docker Hub to ensure secure handling of credentials.
 
@@ -377,9 +384,9 @@ GitHub Actions are used to automate the continuous integration (CI) process for 
 |:--:| 
 | *CI Process* |
 
-#### 2.2.3 <a name='monitoring-and-visualization'></a> Monitoring and Visualization
+#### 2.3.3 <a name='monitoring-and-visualization'></a> Monitoring and Visualization
 
-##### 2.2.3.1 <a name='monitoring-with-prometheus'></a> Monitoring with Prometheus
+##### 2.3.3.1 <a name='monitoring-with-prometheus'></a> Monitoring with Prometheus
 
 As mentioned previously, Prometheus is configured to monitor itself, Grafana, and LaptopMetrics. Since LaptopMetrics is a .NET application, its `/metrics` endpoint provides not only the data scraped from the host machine but also the performance metrics of the application itself.
 
@@ -406,7 +413,7 @@ This command forwards traffic from the local port `3001` to port `30010` on the 
 |:--:| 
 | *Prometheus in Kubernetes Environment* |
 
-##### 2.2.3.2 <a name='visulatization-with-grafana'></a> Visualization with Grafana
+##### 2.3.3.2 <a name='visulatization-with-grafana'></a> Visualization with Grafana
 
 Grafana is used to visualize all the data scraped by Prometheus, and it is also configured to expose its own metrics to Prometheus. Each target has its own dedicated dashboard created for it.
 
